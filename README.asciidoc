@@ -1,0 +1,2 @@
+= Yazılım Tasarım Kalıpları Proje
+160202103 Tarık Bir için ders projesi
