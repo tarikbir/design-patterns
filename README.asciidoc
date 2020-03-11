@@ -2,33 +2,33 @@
 
 = Yazılım Tasarım Kalıpları Projesi
 
-== Örnek başlık 1
+== Lorem Ipsum
 
-Örnek metin
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec porttitor lacus ut dictum consequat. Sed vitae velit rutrum, porta lacus vulputate, pellentesque dolor. Vivamus blandit volutpat dictum. Donec iaculis quis diam sit amet sollicitudin. Fusce fringilla neque dui, eu finibus est molestie sit amet. Quisque semper risus non porta vestibulum. Sed feugiat sem sed consectetur sollicitudin. Quisque non purus non eros egestas commodo a eu sapien. Integer porta scelerisque dictum. Nam lacinia tincidunt odio, lobortis placerat mauris rutrum non. Aenean efficitur erat eget ipsum venenatis vestibulum. Curabitur mattis pharetra velit at molestie. Suspendisse tincidunt sit amet turpis maximus fermentum.
 
-. Numaralı liste 1
-. Numaralı liste 2
-. Numaralı liste 3
+. Sed aliquet dui non orci efficitur
+. Nulla aliquet aliquam odio in sagittis
+. Morbi ligula sem
 
-* Örnek liste 1
-* Örnek liste 2
-* Örnek liste 3
+* Fusce iaculis tortor vitae risus fermentum
+* Vestibulum placerat tortor sed vehicula rhoncus
+* Pellentesque vel metus elit
 
-IMPORTANT: Important Admonition
+IMPORTANT: Cras viverra nibh turpis, sit amet bibendum tellus efficitur quis.
 
-WARNING: Warning Admonition
+WARNING: Ut libero mi, dignissim ac turpis vel, auctor suscipit metus.
 
-CAUTION: Caution Admonition
+CAUTION: Nam quis magna vestibulum, aliquet arcu nec, dictum ligula.
 
-== Örnek başlık 2
+== Nulla ligula mi
 
 .Link example
 link:https://asciidoctor.org/docs/asciidoc-syntax-quick-reference/[Asciidoc reference link]
 
-.Image example
+.Image example with figure text
 image::https://img-prod-cms-rt-microsoft-com.akamaized.net/cms/api/am/imageFileData/RE1Mu3b?ver=5c31[Microsoft]
 
-.Youtube video
+.Youtube video (doesn't work with github)
 video::dQw4w9WgXcQ[youtube]
 
 .C# file
@@ -40,17 +40,17 @@ if (true)
 }
 ----
 
-.Bir Table
+.A Table
 |===
-|Sütun 1 |Sütun 2 |Sütun 3 
+|Column 1 |Column 2 |Column 3 
 
-|İlk satır ilk sütun
-|İlk satır ikinci sütun
-|İlk satır son sütun
+|Suspendisse 
+|congue 
+|turpis
 
-|İkinci satır ilk sütun
-|İkinci satır ikinci sütun
-|İkinci satır son sütun
+|vitae 
+|sapien 
+|finibus
 |===
 
 [[bookmark-a,anchortest]]This is an anchor (#anchortest).
@@ -65,6 +65,8 @@ Class07 .. Class08
 Class09 -- Class10
 @enduml
 --
+
+image::diagram-classes.png[If PlantUml diagrams don't work]
 
 [plantuml,diagram-usecase,png]
 --
@@ -81,3 +83,5 @@ rectangle checkout {
 }
 @enduml
 --
+
+image::diagram-usecase.png[If PlantUml diagrams don't work]
