@@ -1,2 +1,83 @@
-= Yazılım Tasarım Kalıpları Proje
-160202103 Tarık Bir için ders projesi
+:toc:
+
+= Yazılım Tasarım Kalıpları Projesi
+
+== Örnek başlık 1
+
+Örnek metin
+
+. Numaralı liste 1
+. Numaralı liste 2
+. Numaralı liste 3
+
+* Örnek liste 1
+* Örnek liste 2
+* Örnek liste 3
+
+IMPORTANT: Important Admonition
+
+WARNING: Warning Admonition
+
+CAUTION: Caution Admonition
+
+== Örnek başlık 2
+
+.Link example
+link:https://asciidoctor.org/docs/asciidoc-syntax-quick-reference/[Asciidoc reference link]
+
+.Image example
+image::https://img-prod-cms-rt-microsoft-com.akamaized.net/cms/api/am/imageFileData/RE1Mu3b?ver=5c31[Microsoft]
+
+.Youtube video
+video::dQw4w9WgXcQ[youtube]
+
+.C# file
+[source,C#]
+----
+if (true)
+{
+    Console.Write("This"); //Kod
+}
+----
+
+.Bir Table
+|===
+|Sütun 1 |Sütun 2 |Sütun 3 
+
+|İlk satır ilk sütun
+|İlk satır ikinci sütun
+|İlk satır son sütun
+
+|İkinci satır ilk sütun
+|İkinci satır ikinci sütun
+|İkinci satır son sütun
+|===
+
+[[bookmark-a,anchortest]]This is an anchor (#anchortest).
+
+[plantuml,diagram-classes,png]
+--
+@startuml
+Class01 <|-- Class02
+Class03 *-- Class04
+Class05 o-- Class06
+Class07 .. Class08
+Class09 -- Class10
+@enduml
+--
+
+[plantuml,diagram-usecase,png]
+--
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+actor customer
+actor clerk
+rectangle checkout {
+  customer -- (checkout)
+  (checkout) .> (payment) : include
+  (help) .> (checkout) : extends
+  (checkout) -- clerk
+}
+@enduml
+--
