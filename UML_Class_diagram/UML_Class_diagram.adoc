@@ -46,12 +46,12 @@ class Medic {
 }
 
 class Turret {
-    +fire()
+    +Fire()
 }
 
 class Building {
     -unitCount: int
-    +spawnUnits()
+    +SpawnUnits()
 }
 
 class Barracks {
