@@ -1,0 +1,78 @@
+.Army Game
+[uml,file="UML_Class_diag.png"]
+--
+@startuml
+
+class GameManager {
+    -playerID: int
+    -playerName: String
+    -gameID: int
+    -gameEnd: bool
+    +GetPlayerName()
+    +StartGame()
+}
+
+class GameMap {
+    -coordinates: vector
+    +Refresh()
+}
+
+interface Unit {
+    #health: int
+    +Spawn()
+    +GetHealth()
+    +Destroy()
+}
+
+class Soldier{
+    -health = 3
+    +Spawn()
+    +GetHealth()
+    +Destroy()
+}
+
+class Armored {
+    -health = 10
+    +Spawn()
+    +GetHealth()
+    +Destroy()
+}
+
+class Medic {
+    -health = 5
+    +Spawn()
+    +GetHealth()
+    +Destroy()
+}
+
+class Turret {
+    +fire()
+}
+
+class Building {
+    -unitCount: int
+    +spawnUnits()
+}
+
+class Barracks {
+    -unitCount = 1
+}
+
+GameManager --* "1  " GameMap
+
+GameMap "1" -- "1..*     " Building
+
+Soldier ..> Turret: <<use>>
+
+Turret --|> Building
+Barracks --|> Building
+Armored --o Barracks
+Medic --o Barracks
+Soldier --o Barracks
+
+Unit <|.. Armored
+Unit <|.. Medic
+Unit <|.. Soldier
+
+@enduml
+--
