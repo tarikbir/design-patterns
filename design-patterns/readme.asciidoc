@@ -1,0 +1,76 @@
+.Thread-safe Singleton and Factory example
+[uml,file="umlProgram.png"]
+--
+@startuml
+
+class Program{
+    Main()
+}
+
+Program --> Singleton: <<uses>>
+Program --> UnitFactory: <<uses>>
+
+class Singleton {
+    -lazy: Singleton
+    +Instance: Singleton
+	+number: int
+}
+
+Singleton --* "1" Singleton
+
+package "Units"{
+    interface Unit {
+        +Name: string
+        +Health: int
+        +Destroy()
+    }
+    class Soldier {
+        +Name: string
+        +Health: int
+        +Destroy()
+        +Shoot()
+    }
+    class Medic {
+        +Name: string
+        +Health: int
+        +Destroy()
+        +Heal()
+    }
+    Unit --|> Soldier
+    Unit --|> Medic
+}
+
+class UnitFactory {
+    +Create(): Unit
+}
+
+UnitFactory --> Units: <<creates>>
+
+@enduml
+--
+
+.Singleton.cs
+[source,cs, indent=0]
+----
+include::Singleton.cs[lines=5..16]
+----
+<1> .NET 4.0'dan itibaren gelen yeni generic Lazy<T> sınıfı, Singleton tipinde ilklendirilerek link:https://docs.microsoft.com/en-us/dotnet/api/system.lazy-1?view=netframework-4.8[lazy initialization] ile Thread-safe olması sağlanılır.
+<2> "number" adında bir property tanımlayarak Program.cs üzerinde instance kullanımı testi yapılması sağlanır.
+<3> Constructor private olduğundan dışarıdan instance oluşturulması mümkün değildir. Bu sayede teklilik prensibi sağlanır.
+
+.UnitFactory.cs
+[source,cs, indent=0]
+----
+include::Units/UnitFactory.cs[lines=8..18]
+----
+<1> Gelen string null ise geriye null döndürür.
+<2> Gelen stringing null olmaması ve anlamsız olması halinde default olarak Soldier tipinde obje döndürür.
+
+.Program.cs
+[source,cs, indent=0]
+----
+include::Program.cs[lines=12..26]
+----
+<1> Singleton tipinde bir nesne oluşturulamadığından static olmamasına rağmen lazy init sayesinde oluşturulan nesneye referans edilir.
+<2> Number rastgele bir değer atanarak aşağıdaki WriteLine ile çıktı kontrol edilir.
+<3> Factory'den 3 tane nesne istenir ve altta yine son nesnenin Medic olması sağlanır. WriteLine çıktısı obje tipini Medic olarak göstermektedir.
