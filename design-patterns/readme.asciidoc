@@ -16,7 +16,7 @@ class Singleton {
 	+number: int
 }
 
-Singleton --* "1" Singleton
+Singleton --> "1" Singleton
 
 package "Units"{
     interface Unit {
@@ -30,15 +30,15 @@ package "Units"{
     class Medic {
         +Heal()
     }
-    Unit --|> Soldier
-    Unit --|> Medic
+    Unit <|.. Soldier
+    Unit <|.. Medic
 }
 
 class UnitFactory {
     +Create(): Unit
 }
 
-UnitFactory --> Units: <<creates>>
+UnitFactory --> Unit: <<creates>>
 
 @enduml
 --
@@ -46,16 +46,16 @@ UnitFactory --> Units: <<creates>>
 .Singleton.cs
 [source,cs, indent=0]
 ----
-include::Singleton.cs[lines=5..16]
+include::Singleton.cs[lines=5..22]
 ----
 <1> .NET 4.0'dan itibaren gelen yeni generic Lazy<T> sınıfı, Singleton tipinde ilklendirilerek link:https://docs.microsoft.com/en-us/dotnet/api/system.lazy-1?view=netframework-4.8[lazy initialization] ile Thread-safe olması sağlanılır.
-<2> "number" adında bir property tanımlayarak Program.cs üzerinde instance kullanımı testi yapılması sağlanır.
+<2> "Number" adında bir property tanımlayarak Program.cs üzerinde instance kullanımı testi yapılması sağlanır. Lock ile thread-safe değer değiştirilmesi sağlanır.
 <3> Constructor private olduğundan dışarıdan instance oluşturulması mümkün değildir. Bu sayede teklilik prensibi sağlanır.
 
 .UnitFactory.cs
 [source,cs, indent=0]
 ----
-include::Units/UnitFactory.cs[lines=8..18]
+include::Units/UnitFactory.cs[lines=9..18]
 ----
 <1> Gelen string null ise geriye null döndürür.
 <2> Gelen stringing null olmaması ve anlamsız olması halinde default olarak Soldier tipinde obje döndürür.
@@ -63,8 +63,8 @@ include::Units/UnitFactory.cs[lines=8..18]
 .Program.cs
 [source,cs, indent=0]
 ----
-include::Program.cs[lines=12..26]
+include::Program.cs[lines=11..28]
 ----
-<1> Singleton tipinde bir nesne oluşturulamadığından static olmamasına rağmen lazy init sayesinde oluşturulan nesneye referans edilir.
+<1> Parallel.Invoke ile Singleton class'ın aynı anda birden fazla kez çağırılması sağlanır.
 <2> Number rastgele bir değer atanarak aşağıdaki WriteLine ile çıktı kontrol edilir.
 <3> Factory'den 3 tane nesne istenir ve altta yine son nesnenin Medic olması sağlanır. WriteLine çıktısı obje tipini Medic olarak göstermektedir.

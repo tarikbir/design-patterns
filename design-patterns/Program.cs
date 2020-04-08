@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace design_patterns
 {
@@ -9,11 +10,12 @@ namespace design_patterns
     {
         static void Main(string[] args)
         {
-            Singleton instance = Singleton.Instance; //<1>
+            Parallel.Invoke(
+                () => Singleton.Instance.Number = 5,
+                () => Singleton.Instance.Number = 4
+            ); // <1>
 
-            instance.number = 3; //<2>
-
-            Console.WriteLine($"Singleton instance number is: {instance.number}");
+            Console.WriteLine($"Singleton instance number is: {Singleton.Instance.Number}"); //<2>
 
             UnitFactory factory = new UnitFactory();
 
