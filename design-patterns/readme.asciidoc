@@ -4,15 +4,15 @@
 @startuml
 
 class Program{
-    Main()
+    +Main()
 }
 
 Program --> Singleton: <<uses>>
 Program --> UnitFactory: <<uses>>
 
 class Singleton {
-    -lazy: Singleton
-    +Instance: Singleton
+    -{static} lazy: Singleton
+    +{static} Instance: Singleton
 	+number: int
 }
 
@@ -25,15 +25,9 @@ package "Units"{
         +Destroy()
     }
     class Soldier {
-        +Name: string
-        +Health: int
-        +Destroy()
         +Shoot()
     }
     class Medic {
-        +Name: string
-        +Health: int
-        +Destroy()
         +Heal()
     }
     Unit --|> Soldier
