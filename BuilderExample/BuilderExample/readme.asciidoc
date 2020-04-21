@@ -1,0 +1,53 @@
+.Builder example
+[uml,file="umlProgram.png"]
+--
+@startuml
+
+class Program{
+    +{static}Main()
+}
+
+abstract class CombotBuilder {
+    +Combot: combot
+    +{abstract}BuildTorso()
+    +{abstract}BuildLegs()
+    +{abstract}BuildArm()
+}
+
+class AssemblyBay {
+    +Construct(CombotBuilder): void
+}
+
+class Combot {
+    -parts: Dictionary<string,string>
+    -name: string
+    +Combot(string name)
+    +Print()
+}
+
+class RimtechBuilder {
+
+}
+
+class MilagroBuilder {
+
+}
+
+class NeuropaBuilder {
+
+}
+
+Program -- CombotBuilder
+
+CombotBuilder --o AssemblyBay
+
+CombotBuilder <|-- RimtechBuilder
+CombotBuilder <|-- MilagroBuilder
+CombotBuilder <|-- NeuropaBuilder
+
+RimtechBuilder --> Combot
+MilagroBuilder --> Combot
+NeuropaBuilder --> Combot
+
+@enduml
+--

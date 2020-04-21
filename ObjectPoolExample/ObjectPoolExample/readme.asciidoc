@@ -1,0 +1,28 @@
+.ObjectPool Example
+[uml,file="umlProgram.png"]
+--
+@startuml
+
+class Program{
+    +main(): void
+}
+
+Program --> "1 " "ObjectPool<T>": <<use>>
+Program --> Unit
+
+class Unit{
+    +Name: string
+    +Health: int
+    +Damage: int
+}
+
+class "ObjectPool<T>" {
+    -Pool: ConcurrentBag<T>
+    -ObjectGenerator: Func<T>
+    +MaxSize: int
+    +GetObject<T>(): T
+    +PutObject(): void
+}
+
+@enduml
+--

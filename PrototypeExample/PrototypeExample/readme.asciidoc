@@ -1,0 +1,26 @@
+.Prototype Example
+[uml,file="umlProgram.png"]
+--
+@startuml
+
+class Program{
+    +main(): void
+}
+
+Program --> "1..* " Unit: <<use>>
+
+class Unit{
+    +Name: string
+    +Title: string
+    +Health: int
+    +DeepClone(): Unit
+}
+
+abstract class UnitPrototype {
+    +Clone(): UnitPrototype
+}
+
+UnitPrototype <|.. Unit
+
+@enduml
+--
