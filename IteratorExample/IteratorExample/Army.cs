@@ -31,7 +31,7 @@ namespace IteratorExample
         {
             foreach (Unit unit in army)
             {
-                yield return $"{unit.Amount} {unit.Name} ({unit.Type})";
+                yield return $"{unit.Amount} {unit.Name} ({unit.Type})"; // yield return thread-safe'tir.
             }
         }
 

@@ -1,0 +1,44 @@
+.Iterator Example
+[uml,file="umlProgram.png"]
+--
+@startuml
+
+class Program{
+    +main(): void
+}
+
+Program -> IEnumerable: <<use>>
+
+interface IEnumerable{
+    +GetEnumerator(): IEnumerator
+}
+
+IEnumerable <|-- Army
+
+class Army {
+    +Army()
+    +AddSoldiers(name: string, amount: int): void
+    +AddLandcrafts(name: string, amount: int): void
+    +AddAircrafts(name: string, amount: int): void
+    +GetEnumerator(): IEnumerator
+    -army: List<Unit>
+}
+
+Unit -+ Army
+
+class Unit{
+    +Name: string
+    +Amount: int
+    +Type: TypeEnum
+}
+
+TypeEnum <- Unit
+
+enum TypeEnum{
+    Soldier
+    Landcraft
+    Aircraft
+}
+
+@enduml
+--

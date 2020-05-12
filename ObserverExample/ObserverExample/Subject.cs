@@ -5,7 +5,6 @@ namespace ObserverExample
 {
     class Subject: ISubject
     {
-        public int State { get; set; } = 0;
         private readonly object objLock = new object();
 
         private List<IObserver> observers = new List<IObserver>();

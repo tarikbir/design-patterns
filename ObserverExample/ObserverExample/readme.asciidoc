@@ -1,0 +1,42 @@
+.Observer Example
+[uml,file="umlProgram.png"]
+--
+@startuml
+
+class Subject{
+    -objLock: object
+    -observers: List<IObserver>
+    +Attach(observer: IObserver): void
+    +Detach(observer: IObserver): void
+    +Notify(): void
+}
+
+Subject ..|> ISubject
+
+class ConcreteObserverA{
+    +Update(subject: ISubject): void
+}
+
+ConcreteObserverA ..|> IObserver
+ISubject <- ConcreteObserverA
+
+class ConcreteObserverB{
+    +Update(subject: ISubject): void
+}
+
+ConcreteObserverB ..|> IObserver
+ISubject <- ConcreteObserverB
+IObserver <-- Subject
+
+interface IObserver{
+    +Update(subject: ISubject): void
+}
+
+interface ISubject{
+    +Attach(observer: IObserver): void
+    +Detach(observer: IObserver): void
+    +Notify(): void
+}
+
+@enduml
+--
