@@ -1,0 +1,291 @@
+.Simple Mock Game Tüm UML Diyagramı
+[uml,file="umlProgram.png"]
+--
+@startuml
+
+class Position
+{
+    +x: int
+    +y: int
+    +Position(x: int, y: int)
+    +Position(pos: Position)
+}
+
+abstract class Unit
+{
+    +Name: string
+    +Health: int
+    +MaxHealth: int
+    +Position: Position
+    +Damage: int
+    #Unit(name: string, maxHealth: int, position: Position, damage: int)
+    +{abstract}DealDamage(damage: int): void
+    +Move(position: Position): void
+    +Attack(target: Unit): void
+    +GetPrintStatus(): string
+}
+
+Archer ..|> Unit
+Swordsman ..|> Unit
+UpgradedUnit o--|> Unit
+
+class Archer
+{
+    +Archer(name: string, position: Position)
+    +DealDamage(damage: int): void
+}
+
+class Swordsman
+{
+    -armor: int
+    +Archer(name: string, position: Position)
+    +DealDamage(damage: int): void
+}
+
+abstract class UpgradedUnit
+{
+    #unit: Unit
+    +UpgradedUnit(unit: Unit)
+    +DealDamage(damage: int): void
+}
+
+Mutant ..|> UpgradedUnit
+
+class Mutant
+{
+    +Mutant(unit: Unit)
+    +Bite(target: Unit): void
+    +DealDamage(damage: int): void
+}
+
+abstract class Command
+{
+    #unitToExecuteCommandFor: Unit
+    +Command(unit: Unit)
+    +{abstract}Execute(): void
+}
+
+AttackCommand ..|> Command
+MoveCommand ..|> Command
+BiteCommand ..|> Command
+TurnInvoker o--> Command: <<uses>>
+
+class TurnInvoker
+{
+    -startOfTurn: List<Command>
+    -Turn: List<Command>
+    -endOfTurn: List<Command>
+    +TurnInvoker()
+    +AddStartOfTurnCommand(cmd: Command): void
+    +AddTurnCommand(cmd: Command): void
+    +AddEndOfTurnCommand(cmd: Command): void
+    +ExecuteTurn(): void
+    -ExecuteStartOfTurnCommands(): void
+    -ExecuteTurnCommands(): void
+    -ExecuteEndOfTurnCommands(): void
+}
+
+class AttackCommand
+{
+    +target: Unit
+    +AttackCommand(unit: Unit, target: Unit)
+}
+
+class MoveCommand
+{
+    +pos: Position
+    +MoveCommand(unit: Unit, pos: Position)
+}
+
+class BiteCommand
+{
+    +target: Unit
+    +BiteCommand(unit: Unit, target: Unit)
+}
+
+Command --> Unit: <<receiver>>
+
+@enduml
+--
+== Simple Mock Game
+Aslında bir oyun olmayan bu Basit "Yapmacık" Oyun, GOF'un Tasarım Örüntüleri kitaplarındaki Decorator ve Command örüntüleri için örnek olarak hazırlanmıştır. Ayrıca SOLID prensiplerinden Açıklık-Kapalılık Prensibinden de bahsetmektedir.
+
+Oyunlar tasarım örüntüleri için kullanışlı örneklerdir çünkü örüntüler oyun tasarımında sıklıkla kullanılmaktadırlar.
+
+=== Oyun Tasarımı
+Bu oyun sıra tabanlı RPG oyunlarından esinlenilmiştir. Sıralı oynamanın yanı sıra birimler ve birimlerin özellikleri mevcuttur. Birimlerin ismi, sınıfı, sağlık ve hasar değerleri bulunuyor. Ayrıca birimlerin harita üzerindeki pozisyonları da koordinasyon değerleri olarak tutuluyor.
+
+.Program.cs
+[source,cs, indent=0]
+----
+include::Program.cs[lines=18..25]
+----
+<1> Birim üretmek yerine yapmacık oyunculara liste tanımlayarak listelere birim eklenmiştir. Okçu sınıfıntan rastgele isimle üretilen bu birim, (10,20) noktasına yerleştiriliyor.
+<2> İlerde bahsedeceğim Mutant sınıfı birime eklenen özellikleriyle bir Decorator örneğidir. Görüldüğü üzere birimi sararak aynı özelliklerde yeni bir birim oluşturur.
+
+=== Command Örüntüsü
+Emir örüntüsü, bir isteği ve tüm bilgilerini bir objeye dönüştürerek kullanmamızı sağlayan davranışsal bir tasarım örüntüsüdür.
+
+En sık kullanılan yeri operasyonların kaydedilip geri alınabilmesidir.
+
+Bu örnekte emir örüntüsünü oyunun tur sırasını kontrol etmemizi sağlamaktadır.
+
+.Emir Örüntüsü UML diyagramı
+[uml,file="commandUml.png"]
+--
+@startuml
+class Command{
+    +Çalıştır()
+}
+class ConcreteCommand{
+    -Durum
+    +Çalıştır()
+}
+class Client{
+    +main()
+}
+class Invoker{
+
+}
+class Receiver{
+    +Aksiyon()
+}
+Client --> Receiver
+Client ..> ConcreteCommand
+Receiver <-- ConcreteCommand: <<receiver>>
+Invoker o--> Command
+Command <|-- ConcreteCommand
+@enduml
+--
+
+- Emir (Command) sınıfı bir operasyonu çalıştıracak arayüz sunar.
+
+- SomutEmir (ConcreteCommand) sınıfı ile çalıştırma implemente edilerek Alıcıdaki aksiyon bağlanır.
+
+- İstemci (Client) sınıfı ile SomutEmir objesi oluşturularak hangi Alıcıya bağlı olduğu tanımlanır.
+
+- Çağırıcı (Invoker) sınıfı ile emrin isteği yerine getirmesi sağlanır.
+
+- Alıcı (Receiver) sınıfı isteği yerine getirirken yapılacak operasyonları bilmektedir.
+
+==== Örnekler
+
+.Abstract Command sınıfının Execute() metodu.
+[source,cs, indent=0]
+----
+include::Command/Command.cs[lines=14]
+----
+
+.AttackCommand sınıfındaki Execute() implementasyonu.
+[source,cs, indent=0]
+----
+include::Command/AttackCommand.cs[lines=12..15]
+----
+
+.TurnInvoker sınıfındaki Tur listesindeki her emrin yerine getirilmesi.
+[source,cs, indent=0]
+----
+include::Command/TurnInvoker.cs[lines=53..60]
+----
+
+.Program.cs
+[source,cs, indent=0]
+----
+include::Program.cs[lines=36..44]
+----
+<1> Yapmacık oyunda burada ilk oyuncunun üçüncü biriminin ikinci oyuncunun ilk birimine saldırması için bir tur emri ekleniyor.
+<2> Burada ise tur sonu emirlerine bir hareket emri ekleniyor.
+
+=== Decorator Örüntüsü
+Süsleyici örüntüsü, fonksiyonelliği artırmak için alt sınıflamaya dinamik bir alternatif sunuyor.
+
+Süsleyici örüntü, var olan bir sınıfı dinamik olarak sararak ona fonksiyonellik ekler ve sınıfla aynı şekilde kullanıma sunar. Bu nedenle kullanıcılar orjinal sınıfla aynı sınıfı görmesine rağmen farklı fonksiyonelliğe sahip olabilir.
+
+.Süsleyici örüntüsü UML diyagramı
+[uml,file="decoratorUml.png"]
+--
+@startuml
+interface Component{
+    +Fonksiyon()
+}
+
+abstract class Decorator{
+    +Fonksiyon()
+}
+Component <|--o Decorator
+class ConcreteDecorator{
+    +Fonksiyon()
+    +EkFonksiyon()
+}
+Decorator <|.. ConcreteDecorator
+@enduml
+--
+
+- Bileşen (Component) dinamik olarak eklenmesi gereken nesneyi gösterir.
+
+- Süsleyici (Decorator) sınıfı tüm dinamik eklenebilecek işlevselliğe bir arayüz sağlar.
+
+- SomutSüsleyici (ConcreteDecorator) sınıfı ise eklenecek fonksiyonları tutar.
+
+Süsleyici örüntüsü aynı zamanda Açıklık Kapalılık Prensibi'yle (Open-Closed Principle) örtüşmektedir. Çünkü eklentiye açık ve modifikasyona kapalıdır. Dinamik fonksiyon eklemek bununla tamamiyle örtüşmektedir.
+
+==== Örnekler
+
+.Yapmacık Oyundaki Decorator sınıfı birimin geliştirilmesidir.
+[source,cs, indent=0]
+----
+include::Decorator/UpgradedUnit.cs[lines=14..17]
+----
+
+.Gelişen soyut sınıfı Mutant isminde somutlaştırarak herhangi bir birime Mutant olma özelliği eklenebiliyor.
+[source,cs, indent=0]
+----
+include::Decorator/Mutant.cs[lines=8..22]
+----
+
+.Program.cs
+[source,cs, indent=0]
+----
+include::Program.cs[lines=36..44]
+----
+<1> Yapmacık oyunda burada ilk oyuncunun üçüncü biriminin ikinci oyuncunun ilk birimine saldırması için bir tur emri ekleniyor.
+<2> Burada ise tur sonu emirlerine bir hareket emri ekleniyor.
+
+=== Açıklık-Kapalılık Prensibi
+Tasarım örüntülerinin yanı sıra mimari açıdan fayda sağlayan prensipler de bulunmaktadır. SOLID prensipleri olarak geçen bu prensipler yazılım tasarımında olmazsa olmazlardandır.
+
+- Tekil Sorumluluk Prensibi (Single Responsibility Principle)
+- Açıklık – Kapalılık Prensibi (Open – Closed Principle)
+- Liskov’un Yer değiştirme prensibi (Liskov’s Substitution Principle)
+- Arayüz Ayrım Prensibi (Interface Segregation Principle)
+- Bağlılığı Ters Çevirme Prensibi (Dependency Injection Principle)
+
+Bu prensipler arasından Açıklık-Kapalılık Prensibinden bahsedeceğim. Başta kulağa 
+
+> Açıklık Kapalılık Prensibine göre modüller genişlemeye açık, değişikliğe kapalı olmalıdır.
+
+Bu prensibe göre yazılan kod hata çözümü dışında gelecekte değişiklik gerektirmemelidir. Aynı zamanda genişlemeye açık olmazsa, gelişmesi mümkün olmayacağından genişlemeye de açık olmalıdır.
+
+Burada genişlemeden kasıt, yazılım test edilmiş ve çalışıyorsa, yeniden düzenlenmesi hatalara neden olabilir. Bunun önüne geçebilmek için var olan bir nesneyi genişletilebilir yapmak gerekmektedir. Bunu farklı şekillerde yapabiliriz.
+
+Bu prensip yazılımların geriye uyumlu olma (Backwards Compatible) özelliğine sahip olmasının en önemli unsurudur.
+
+==== Örnekler
+
+Decorator pattern'i başlı başına bir Açıklık-Kapalılık Prensibi örneğidir. Bunun dışında Basit "Yapmacık" Oyun'da geçen bir diğer Açıklık-Kapalılık Prensibi örneğini ele alabiliriz.
+
+.Soyut Unit sınıfındaki soyut metod tanımı
+[source,cs, indent=0]
+----
+include::Units/Unit.cs[lines=22]
+----
+<1> Burada tanımlı DealDamage() metodu, Unit üzerinden türeyen diğer sınıflar için override edilmek zorundadır. Çoğunlukla alınan hasar, sağlık değerinden düşülmektedir.
+
+.Swordsman sınıfındaki implementasyon
+[source,cs, indent=0]
+----
+include::Units/Swordsman.cs[lines=12..15]
+----
+<1> Burada tanımlı DealDamage() metodu diğer hasar verme metodlarından farklı olarak kılıçlı birimin zırh değerini de hesaba katıyor.
+
+Bu sayede her birime kendi hasarını kendi verme şansı tanıyarak Unit sınıfını değişime kapatıyoruz, diğer sınıflara istediğimiz özellikleri tanıyabildiğimiz için onlar da geliştirmeye açık oluyorlar. Bunu daha da geliştirmek için her bir can kaybını başka bir metoda alarak, yalnızca o metodları güncelleyerek bu prensibi daha da geliştirebiliriz.
