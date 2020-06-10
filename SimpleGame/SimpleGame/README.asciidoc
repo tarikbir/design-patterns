@@ -123,7 +123,104 @@ include::Program.cs[lines=18..25]
 <1> Birim üretmek yerine yapmacık oyunculara liste tanımlayarak listelere birim eklenmiştir. Okçu sınıfıntan rastgele isimle üretilen bu birim, (10,20) noktasına yerleştiriliyor.
 <2> İlerde bahsedeceğim Mutant sınıfı birime eklenen özellikleriyle bir Decorator örneğidir. Görüldüğü üzere birimi sararak aynı özelliklerde yeni bir birim oluşturur.
 
-=== Command Örüntüsü
+.Program Output
+image::Output.png[Output]
+
+=== Açıklık-Kapalılık Prensibi
+Tasarım örüntülerinin yanı sıra mimari açıdan fayda sağlayan prensipler de bulunmaktadır. SOLID prensipleri olarak geçen bu prensipler yazılım tasarımında olmazsa olmazlardandır.
+
+- Tekil Sorumluluk Prensibi (Single Responsibility Principle)
+- Açıklık – Kapalılık Prensibi (Open – Closed Principle)
+- Liskov’un Yer değiştirme prensibi (Liskov’s Substitution Principle)
+- Arayüz Ayrım Prensibi (Interface Segregation Principle)
+- Bağlılığı Ters Çevirme Prensibi (Dependency Injection Principle)
+
+Bu prensipler arasından Açıklık-Kapalılık Prensibinden bahsedeceğim. Başta kulağa zıt gibi gelse bile, bu prensip aslında mimarisi büyük yapıları kodlarken fazlasıyla önemlidir.
+
+> Açıklık Kapalılık Prensibine göre modüller genişlemeye açık, değişikliğe kapalı olmalıdır.
+
+Bu prensibe göre yazılan kod hata çözümü dışında gelecekte değişiklik gerektirmemelidir. Aynı zamanda genişlemeye açık olmazsa, gelişmesi mümkün olmayacağından genişlemeye de açık olmalıdır.
+
+Burada genişlemeden kasıt, yazılım test edilmiş ve çalışıyorsa, yeniden düzenlenmesi hatalara neden olabilir. Bunun önüne geçebilmek için var olan bir nesneyi genişletilebilir yapmak gerekmektedir. Bunu farklı şekillerde yapabiliriz.
+
+Bu prensip yazılımların geriye uyumlu olma (Backwards Compatible) özelliğine sahip olmasının en önemli unsurudur.
+
+==== Örnekler
+
+Decorator pattern'i başlı başına bir Açıklık-Kapalılık Prensibi örneğidir. Bunun dışında Basit "Yapmacık" Oyun'da geçen bir diğer Açıklık-Kapalılık Prensibi örneğini ele alabiliriz.
+
+.Soyut Unit sınıfındaki soyut metod tanımı
+[source,cs, indent=0]
+----
+include::Units/Unit.cs[lines=22]
+----
+<1> Burada tanımlı DealDamage() metodu, Unit üzerinden türeyen diğer sınıflar için override edilmek zorundadır. Çoğunlukla alınan hasar, sağlık değerinden düşülmektedir.
+
+.Swordsman sınıfındaki implementasyon
+[source,cs, indent=0]
+----
+include::Units/Swordsman.cs[lines=12..15]
+----
+<1> Burada tanımlı DealDamage() metodu diğer hasar verme metodlarından farklı olarak kılıçlı birimin zırh değerini de hesaba katıyor.
+
+Bu sayede her birime kendi hasarını kendi verme şansı tanıyarak Unit sınıfını değişime kapatıyoruz, diğer sınıflara istediğimiz özellikleri tanıyabildiğimiz için onlar da geliştirmeye açık oluyorlar. Bunu daha da geliştirmek için her bir can kaybını başka bir metoda alarak, yalnızca o metodları güncelleyerek bu prensibi daha da geliştirebiliriz.
+
+=== Decorator Pattern
+Süsleyici örüntüsü, fonksiyonelliği artırmak için alt sınıflamaya dinamik bir alternatif sunuyor.
+
+Süsleyici örüntü, var olan bir sınıfı dinamik olarak sararak ona fonksiyonellik ekler ve sınıfla aynı şekilde kullanıma sunar. Bu nedenle kullanıcılar orjinal sınıfla aynı sınıfı görmesine rağmen farklı fonksiyonelliğe sahip olabilir.
+
+.Süsleyici örüntüsü UML diyagramı
+[uml,file="decoratorUml.png"]
+--
+@startuml
+interface Component{
+    +Fonksiyon()
+}
+
+abstract class Decorator{
+    +Fonksiyon()
+}
+Component <|--o Decorator
+class ConcreteDecorator{
+    +Fonksiyon()
+    +EkFonksiyon()
+}
+Decorator <|.. ConcreteDecorator
+@enduml
+--
+
+- Bileşen (Component) dinamik olarak eklenmesi gereken nesneyi gösterir.
+
+- Süsleyici (Decorator) sınıfı tüm dinamik eklenebilecek işlevselliğe bir arayüz sağlar.
+
+- SomutSüsleyici (ConcreteDecorator) sınıfı ise eklenecek fonksiyonları tutar.
+
+Süsleyici örüntüsü aynı zamanda Açıklık Kapalılık Prensibi'yle (Open-Closed Principle) örtüşmektedir. Çünkü eklentiye açık ve modifikasyona kapalıdır. Dinamik fonksiyon eklemek bununla tamamiyle örtüşmektedir.
+
+==== Örnekler
+
+.Yapmacık Oyundaki Decorator sınıfı birimin geliştirilmesidir.
+[source,cs, indent=0]
+----
+include::Decorator/UpgradedUnit.cs[lines=5..18]
+----
+
+.Gelişen soyut sınıfı Mutant isminde somutlaştırarak herhangi bir birime Mutant olma özelliği eklenebiliyor.
+[source,cs, indent=0]
+----
+include::Decorator/Mutant.cs[lines=6..23]
+----
+
+.Program.cs
+[source,cs, indent=0]
+----
+include::Program.cs[lines=36..44]
+----
+<1> Yapmacık oyunda burada ilk oyuncunun üçüncü biriminin ikinci oyuncunun ilk birimine saldırması için bir tur emri ekleniyor.
+<2> Burada ise tur sonu emirlerine bir hareket emri ekleniyor.
+
+=== Command Pattern
 Emir örüntüsü, bir isteği ve tüm bilgilerini bir objeye dönüştürerek kullanmamızı sağlayan davranışsal bir tasarım örüntüsüdür.
 
 En sık kullanılan yeri operasyonların kaydedilip geri alınabilmesidir.
@@ -173,7 +270,7 @@ Command <|-- ConcreteCommand
 .Abstract Command sınıfının Execute() metodu.
 [source,cs, indent=0]
 ----
-include::Command/Command.cs[lines=14]
+include::Command/Command.cs[lines=5..15]
 ----
 
 .AttackCommand sınıfındaki Execute() implementasyonu.
@@ -195,97 +292,3 @@ include::Program.cs[lines=36..44]
 ----
 <1> Yapmacık oyunda burada ilk oyuncunun üçüncü biriminin ikinci oyuncunun ilk birimine saldırması için bir tur emri ekleniyor.
 <2> Burada ise tur sonu emirlerine bir hareket emri ekleniyor.
-
-=== Decorator Örüntüsü
-Süsleyici örüntüsü, fonksiyonelliği artırmak için alt sınıflamaya dinamik bir alternatif sunuyor.
-
-Süsleyici örüntü, var olan bir sınıfı dinamik olarak sararak ona fonksiyonellik ekler ve sınıfla aynı şekilde kullanıma sunar. Bu nedenle kullanıcılar orjinal sınıfla aynı sınıfı görmesine rağmen farklı fonksiyonelliğe sahip olabilir.
-
-.Süsleyici örüntüsü UML diyagramı
-[uml,file="decoratorUml.png"]
---
-@startuml
-interface Component{
-    +Fonksiyon()
-}
-
-abstract class Decorator{
-    +Fonksiyon()
-}
-Component <|--o Decorator
-class ConcreteDecorator{
-    +Fonksiyon()
-    +EkFonksiyon()
-}
-Decorator <|.. ConcreteDecorator
-@enduml
---
-
-- Bileşen (Component) dinamik olarak eklenmesi gereken nesneyi gösterir.
-
-- Süsleyici (Decorator) sınıfı tüm dinamik eklenebilecek işlevselliğe bir arayüz sağlar.
-
-- SomutSüsleyici (ConcreteDecorator) sınıfı ise eklenecek fonksiyonları tutar.
-
-Süsleyici örüntüsü aynı zamanda Açıklık Kapalılık Prensibi'yle (Open-Closed Principle) örtüşmektedir. Çünkü eklentiye açık ve modifikasyona kapalıdır. Dinamik fonksiyon eklemek bununla tamamiyle örtüşmektedir.
-
-==== Örnekler
-
-.Yapmacık Oyundaki Decorator sınıfı birimin geliştirilmesidir.
-[source,cs, indent=0]
-----
-include::Decorator/UpgradedUnit.cs[lines=14..17]
-----
-
-.Gelişen soyut sınıfı Mutant isminde somutlaştırarak herhangi bir birime Mutant olma özelliği eklenebiliyor.
-[source,cs, indent=0]
-----
-include::Decorator/Mutant.cs[lines=8..22]
-----
-
-.Program.cs
-[source,cs, indent=0]
-----
-include::Program.cs[lines=36..44]
-----
-<1> Yapmacık oyunda burada ilk oyuncunun üçüncü biriminin ikinci oyuncunun ilk birimine saldırması için bir tur emri ekleniyor.
-<2> Burada ise tur sonu emirlerine bir hareket emri ekleniyor.
-
-=== Açıklık-Kapalılık Prensibi
-Tasarım örüntülerinin yanı sıra mimari açıdan fayda sağlayan prensipler de bulunmaktadır. SOLID prensipleri olarak geçen bu prensipler yazılım tasarımında olmazsa olmazlardandır.
-
-- Tekil Sorumluluk Prensibi (Single Responsibility Principle)
-- Açıklık – Kapalılık Prensibi (Open – Closed Principle)
-- Liskov’un Yer değiştirme prensibi (Liskov’s Substitution Principle)
-- Arayüz Ayrım Prensibi (Interface Segregation Principle)
-- Bağlılığı Ters Çevirme Prensibi (Dependency Injection Principle)
-
-Bu prensipler arasından Açıklık-Kapalılık Prensibinden bahsedeceğim. Başta kulağa 
-
-> Açıklık Kapalılık Prensibine göre modüller genişlemeye açık, değişikliğe kapalı olmalıdır.
-
-Bu prensibe göre yazılan kod hata çözümü dışında gelecekte değişiklik gerektirmemelidir. Aynı zamanda genişlemeye açık olmazsa, gelişmesi mümkün olmayacağından genişlemeye de açık olmalıdır.
-
-Burada genişlemeden kasıt, yazılım test edilmiş ve çalışıyorsa, yeniden düzenlenmesi hatalara neden olabilir. Bunun önüne geçebilmek için var olan bir nesneyi genişletilebilir yapmak gerekmektedir. Bunu farklı şekillerde yapabiliriz.
-
-Bu prensip yazılımların geriye uyumlu olma (Backwards Compatible) özelliğine sahip olmasının en önemli unsurudur.
-
-==== Örnekler
-
-Decorator pattern'i başlı başına bir Açıklık-Kapalılık Prensibi örneğidir. Bunun dışında Basit "Yapmacık" Oyun'da geçen bir diğer Açıklık-Kapalılık Prensibi örneğini ele alabiliriz.
-
-.Soyut Unit sınıfındaki soyut metod tanımı
-[source,cs, indent=0]
-----
-include::Units/Unit.cs[lines=22]
-----
-<1> Burada tanımlı DealDamage() metodu, Unit üzerinden türeyen diğer sınıflar için override edilmek zorundadır. Çoğunlukla alınan hasar, sağlık değerinden düşülmektedir.
-
-.Swordsman sınıfındaki implementasyon
-[source,cs, indent=0]
-----
-include::Units/Swordsman.cs[lines=12..15]
-----
-<1> Burada tanımlı DealDamage() metodu diğer hasar verme metodlarından farklı olarak kılıçlı birimin zırh değerini de hesaba katıyor.
-
-Bu sayede her birime kendi hasarını kendi verme şansı tanıyarak Unit sınıfını değişime kapatıyoruz, diğer sınıflara istediğimiz özellikleri tanıyabildiğimiz için onlar da geliştirmeye açık oluyorlar. Bunu daha da geliştirmek için her bir can kaybını başka bir metoda alarak, yalnızca o metodları güncelleyerek bu prensibi daha da geliştirebiliriz.
